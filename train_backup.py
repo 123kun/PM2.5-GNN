@@ -13,7 +13,6 @@ from model.GC_LSTM import GC_LSTM
 from model.nodesFC_GRU import nodesFC_GRU
 from model.PM25_GNN import PM25_GNN
 from model.PM25_GNN_nosub import PM25_GNN_nosub
-from loss.dilate_loss import dilate_loss
 
 import arrow
 import torch
@@ -123,10 +122,7 @@ def train(train_loader, model, optimizer):
         pm25_label = pm25[:, hist_len:]
         pm25_hist = pm25[:, :hist_len]
         pm25_pred = model(pm25_hist, feature)
-        # loss = criterion(pm25_pred, pm25_label)
-
-        loss, loss_shape, loss_temporal = dilate_loss(pm25_pred, pm25_label, 0.5, 0.001, device)
-
+        loss = criterion(pm25_pred, pm25_label)
         loss.backward()
         optimizer.step()
         train_loss += loss.item()
